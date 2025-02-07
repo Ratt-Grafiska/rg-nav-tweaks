@@ -1,23 +1,30 @@
 <?php
-/*
-Plugin Name: Custom Navigation Styling
-Plugin URI: https://github.com/donjohann/custom-login-theme
-Description: A WordPress plugin that customizes the navigation menu display based on screen width.
-Version: 1.1
-Author: Johan Wistbacka
-Author URI: https://wistbacka.se
-License: GPL2
-*/
+// Prevent direct access
+if (!defined('ABSPATH')) {
+	exit;	
+}
 
-add_Action('wp_head','my_head_css');
-function my_head_css(){
-	// Använd funktionen för att få layoutmåtten
-	$content_size = wp_get_global_settings(array('layout', 'contentSize'));
-	$wide_size = wp_get_global_settings(array('layout', 'wideSize'));
-	$breakpoint = $content_size;
-	// $breakpoint = '800px';
-	
-	echo "<style>
+add_action("wp_head", "rg_head_css");
+function rg_head_css()
+{
+  // Använd funktionen för att få layoutmåtten
+  $breakpoint = get_option('wp_breakpoint_value', 'contentSize'); // Hämtar lagrat värde, standard är 'contentSize'
+  $custom_breakpoint = get_option('wp_breakpoint_custom_value', '1024'); // Hämtar anpassat värde, standard 1024px
+
+  if ($breakpoint === 'contentSize') {
+      // Använd contentSize från globala inställningar
+      $breakpoint = wp_get_global_settings(["layout", "contentSize"]);
+  } elseif ($breakpoint === 'wideSize') {
+      // Använd wideSize från globala inställningar
+      $breakpoint = wp_get_global_settings(["layout", "wideSize"]);
+  } elseif ($breakpoint === 'custom') {
+      // Använd anpassat värde
+      $breakpoint = $custom_breakpoint . 'px';
+  }
+
+  if(isset($breakpoint)){
+     deb
+  echo "<style>
 
 	body .wp-block-navigation__responsive-container-open:not(.always-shown) {
 		display: block !important;
@@ -35,12 +42,16 @@ function my_head_css(){
 		display: inherit;
 	}
 
-	@media (max-width: ".$breakpoint.") {
+	@media (max-width: " .
+    $breakpoint .
+    ") {
 		body .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation-item__content{
 			padding: 2em;
 		}
 	}
-	@media (min-width: ".$content_size.") {
+	@media (min-width: " .
+    $breakpoint .
+    ") {
 		body .wp-block-navigation__responsive-container-open:not(.always-shown) {
 			display: none !important;;
 		}
@@ -64,7 +75,6 @@ function my_head_css(){
 	}
 
 	</style>";
+  }
 }
-
-// Använd 'wp_head' action hook för att lägga till den anpassade CSS:en och JavaScriptet i headern
-// add_action('wp_head', 'override_native_navigation_breakpoint');
+?>

@@ -23,7 +23,7 @@ function rg_head_css()
   }
 
   if(isset($breakpoint)){
-     deb
+     
   echo "<style>
 
 	body .wp-block-navigation__responsive-container-open:not(.always-shown) {

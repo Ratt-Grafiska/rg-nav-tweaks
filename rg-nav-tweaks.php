@@ -1,46 +1,65 @@
 <?php
-// Exit if accessed directly.
-if (!defined("ABSPATH")) {
-  exit();
+// Prevent direct access
+if (!defined('ABSPATH')) {
+	exit;	
 }
 
-// Hook into wp_head to inject CSS.
-add_action("wp_head", "rg_nav_tweaks_head_css");
-function rg_nav_tweaks_head_css()
+add_action("wp_head", "rg_head_css");
+function rg_head_css()
 {
-  $content_size = wp_get_global_settings(["layout", "contentSize"]);
-  $wide_size = wp_get_global_settings(["layout", "wideSize"]);
-  $breakpoint = $content_size ? esc_attr($content_size) : "800px";
+  // Använd funktionen för att få layoutmåtten
+  $breakpoint = get_option('wp_breakpoint_value', 'contentSize'); // Hämtar lagrat värde, standard är 'contentSize'
+  $custom_breakpoint = get_option('wp_breakpoint_custom_value', '1024'); // Hämtar anpassat värde, standard 1024px
 
+  if ($breakpoint === 'contentSize') {
+      // Använd contentSize från globala inställningar
+      $breakpoint = wp_get_global_settings(["layout", "contentSize"]);
+  } elseif ($breakpoint === 'wideSize') {
+      // Använd wideSize från globala inställningar
+      $breakpoint = wp_get_global_settings(["layout", "wideSize"]);
+  } elseif ($breakpoint === 'custom') {
+      // Använd anpassat värde
+      $breakpoint = $custom_breakpoint . 'px';
+  }
+
+  if(isset($breakpoint)){
+     
   echo "<style>
+
 	body .wp-block-navigation__responsive-container-open:not(.always-shown) {
 		display: block !important;
 	}
 	body .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
 		display: none !important;
 	}
-	.d-none {
+	.d-none{
 		display: none;
 	}
-	body .wp-block-navigation__responsive-container.is-menu-open .d-open {
+	body .wp-block-navigation__responsive-container.is-menu-open .d-open{
 		display: none;
 	}
-	body .wp-block-navigation__responsive-container .d-open {
+	body .wp-block-navigation__responsive-container .d-open{
 		display: inherit;
 	}
-	@media (max-width: $breakpoint) {
-		body .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation-item__content {
+
+	@media (max-width: " .
+    $breakpoint .
+    ") {
+		body .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation__responsive-container-content .wp-block-navigation-item__content{
 			padding: 2em;
 		}
 	}
-	@media (min-width: $content_size) {
+	@media (min-width: " .
+    $breakpoint .
+    ") {
 		body .wp-block-navigation__responsive-container-open:not(.always-shown) {
-			display: none !important;
+			display: none !important;;
 		}
 		body .wp-block-navigation__responsive-container:not(.hidden-by-default):not(.is-menu-open) {
 			display: block !important;
 		}
-		.d-contentSize {
+		
+		.d-contentSize{
 			display: inherit !important;
 		}
 		.wp-block-navigation__responsive-container.is-menu-open {
@@ -50,11 +69,12 @@ function rg_nav_tweaks_head_css()
 			width: 100%;
 			z-index: auto;
 		}
-		.is-menu-open .wp-block-navigation__responsive-close,
-		.is-menu-open .wp-block-navigation__responsive-container-content,
-		.is-menu-open .wp-block-navigation__responsive-dialog {
+		.is-menu-open .wp-block-navigation__responsive-close, .is-menu-open .wp-block-navigation__responsive-container-content, .is-menu-open .wp-block-navigation__responsive-dialog{
 			display: none;
 		}
 	}
+
 	</style>";
+  }
 }
+?>
